@@ -197,7 +197,17 @@ function stringToCode128(text) {
         //ok some type of shift is nessecary
         if (shifter != -1) {
             result.push(shifter);
-            result.push(codeValue(chr2));
+            /*
+            *原因是code128C是纯数字条码，但是必须是偶数位。
+            *当出现奇数位是，需要在最后一位前用code128B进行转码声明，
+            *也就是作者在最后一位前插入了shifter（shifter=100)，
+            *这样shifter后面的那一位应该是code128B对应的1，也就是19，
+            *但是上文中却错误的插入了chr2也就是-1对应的codeValue：62，
+            *也就是code128B中62对应的码字_，导致出现奇数位最后一位的错误。
+            *把这里的chr2改成chr1即可。 
+             */
+            //result.push(codeValue(chr2));
+            result.push(codeValue(chr1));
         }
         else {
             if (currcs == CODESET.C) {
